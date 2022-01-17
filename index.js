@@ -1,6 +1,5 @@
 import * as THREE from "//cdn.skypack.dev/three@0.134?min";
 import { OrbitControls } from "//cdn.skypack.dev/three@0.134/examples/jsm/controls/OrbitControls?min";
-
 const starsTexture = "./stars.jpeg";
 const sunTexture = "./sun.jpeg";
 const mercuryTexture = "./merc.jpeg";
@@ -25,10 +24,13 @@ const camera = new THREE.PerspectiveCamera(
 
 const orbit = new OrbitControls(camera, renderer.domElement);
 
-camera.position.set(-90, 140, 140);
+camera.position.set(40, 100, 250);
+orbit.minDistance = 100
+orbit.maxDistance = 300
+
 orbit.update();
 
-const ambientLight = new THREE.AmbientLight(0x333333);
+const ambientLight = new THREE.AmbientLight(0x101010);
 scene.add(ambientLight);
 
 const cubeTextureLoader = new THREE.CubeTextureLoader();
@@ -50,7 +52,7 @@ const sunMat = new THREE.MeshBasicMaterial({
 const sun = new THREE.Mesh(sunGeo, sunMat);
 scene.add(sun);
 
-function createPlanete(size, texture, position, ring) {
+function createPlanete(size, texture, position) {
     const geo = new THREE.SphereGeometry(size, 30, 30);
     const mat = new THREE.MeshStandardMaterial({
         map: textureLoader.load(texture)
@@ -58,21 +60,6 @@ function createPlanete(size, texture, position, ring) {
     const mesh = new THREE.Mesh(geo, mat);
     const obj = new THREE.Object3D();
     obj.add(mesh);
-    if (ring) {
-        const ringGeo = new THREE.RingGeometry(
-            ring.innerRadius,
-            ring.outerRadius,
-            32
-        );
-        const ringMat = new THREE.MeshBasicMaterial({
-            map: textureLoader.load(ring.texture),
-            side: THREE.DoubleSide
-        });
-        const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-        obj.add(ringMesh);
-        ringMesh.position.x = position;
-        ringMesh.rotation.x = -0.5 * Math.PI;
-    }
     scene.add(obj);
     mesh.position.x = position;
     return { mesh, obj };
@@ -97,13 +84,12 @@ function animate() {
     mars.mesh.rotateY(0.018);
     jupiter.mesh.rotateY(0.04);
 
-
     //Around-sun-rotation
     mercury.obj.rotateY(0.04);
     venus.obj.rotateY(0.015);
     earth.obj.rotateY(0.01);
     mars.obj.rotateY(0.008);
-    jupiter.obj.rotateY(0.002);
+    jupiter.obj.rotateY(0.004);
 
     renderer.render(scene, camera);
 }
